@@ -171,6 +171,17 @@ def generate_data(task_list, data_dim, total_sep_num, cv_matrix=None, seed_value
         output_all.append(output_temp.T)
     return input_all, output_all
 
+def get_data_normal(task_num, input_dim, total_sep_num, alpha=3, tau=5, seed_value=100):
+    np.random.seed(seed_value)
+    cv_matrix = np.identity(input_dim)
+    mean_arr = np.zeros(input_dim)
+
+    input_all = []
+    output_all = []
+    for i in range(task_num):
+        input_temp = np.random.multivariate_normal(mean_arr, cv_matrix, total_sep_num) # size: total_num, d
+    return input_temp
+
 def generate_data_LN(task_list, data_dim, total_sep_num, alpha=3, tau=5, seed_value=100):
     np.random.seed(seed_value)
     task_num = len(task_list)

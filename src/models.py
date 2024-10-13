@@ -4,6 +4,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torch.utils.data as Datasample
 
+import utilis as TF_tools
+
 class MyDataset(Datasample.Dataset):
     def __init__(self, data_X, data_Y, incontext_len, input_dim):
         self.data_X = data_X
@@ -160,19 +162,18 @@ def train_system(n, d, batch_size, train_valid_X_Y, best_model_path, device="cud
                 break
     return train_mse_hist, valid_mse_hist, model #, param_list_P, param_list_Q
 
-def predict(n, d, device, test_X, test_Y, best_model_path, option="full", batchsize=1):
+def predict(n, d, device, test_X, test_Y, best_model_path, batchsize=1):
     test_loader = DataLoader(MyDataset(test_X, test_Y, n, d), batch_size=batchsize, shuffle=False)#, num_workers=2)
-    if option=="full":
-        model = Transformer_linear_full(n, d, device=device).to(device)
-    else:
-        model = Transformer_linear_partial(n, d, device=device).to(device)
-        
-    model = Transformer_linear(n, d, device=device).to(device)
+
+    model = TF_linear_att(n, d, device=device).to(device)
     print("Start loading")
     model.load_state_dict(torch.load(best_model_path))
     
     model.eval()
-    test_loss_array = []
+    pred_Y_list = []
+    target_Y_list = []
+    test_loss_array = [] 
+    
     for i, data_temp in enumerate(test_loader):
 
         test_X_temp, test_Y_temp = data_temp
@@ -182,6 +183,8 @@ def predict(n, d, device, test_X, test_Y, best_model_path, option="full", batchs
         pred_Y = model(test_X_temp)
         loss = my_loss(pred_Y, test_Y_temp)
         test_loss_array.append(loss.item())
+        pred_Y_list.append(pred_Y.detach().cpu())
+        target_Y_list.append(test_Y_temp.detach().cpu())
 
     test_loss_cur = np.mean(test_loss_array)
-    return test_loss_cur, mode
+    return np.concatenate(pred_Y_list, axis=0), np.concatenate(target_Y_list,axis=0), test_loss_cur, model
