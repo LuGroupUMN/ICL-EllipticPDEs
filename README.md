@@ -1,6 +1,6 @@
 ## Introduction
 
-This repository contains the numerical implementation of the Transformer architecture introduced in the paper *"Provable In-Context Learning of Linear Systems and Linear Elliptic PDEs with Transformers."*
+This repository contains the numerical implementation of the Transformer architecture introduced in the paper *"Provable In-Context Learning of Linear Systems and Linear Elliptic PDEs with Transformers." ([Link](https://arxiv.org/abs/2409.12293))*
 
 The repository is organized as follows:
 
